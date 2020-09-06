@@ -19,7 +19,7 @@ class Token:
 class LexerRule:
 
     @staticmethod
-    def make_from_file(file_path):
+    def make_from_file(file_path) -> List:
 
         with open(file_path, 'r') as input_file:
 
