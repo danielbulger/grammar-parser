@@ -55,8 +55,8 @@ class EarleyParser(Parser):
 
         for item in charts[-1]:
             if item.is_complete() and item.origin == 0:
-                print(item)
-                return True
+                return item
+
         raise Exception('Input was not accepted by this Grammar')
 
     def predict(self, charts: List[List[EarleyItem]], item: EarleyItem, position: int):
