@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from typing import List
 
-from . import Token
+from . import Token, LexerRule
 
 
 class GrammarRule:
@@ -14,22 +14,26 @@ class GrammarRule:
 
             for line in input_file.readlines():
 
-                parts = [x.strip() for x in line.split("->")]
+                parts = [x.strip() for x in line.split("->") if len(x) > 0]
 
-                rules.append(GrammarRule(parts[0], parts[1].split(' ')))
+                if len(parts) < 2:
+                    raise Exception(f'Unable to parse grammar rules due to {line}')
+
+                for rule in parts[1].split('|'):
+                    rules.append(GrammarRule(parts[0], rule.strip().split(' ')))
 
             return rules
 
-    def __init__(self, name: str, tokens: List[str]):
-        self.name = name
+    def __init__(self, symbol: str, tokens: List[str]):
+        self.symbol = symbol
         self.tokens = tokens
 
-    def __contains__(self, item) -> bool:
+    def __contains__(self, item: str) -> bool:
         return item in self.tokens
 
     def __eq__(self, other) -> bool:
         return type(other) is GrammarRule and \
-               self.name == other.name and \
+               self.symbol == other.symbol and \
                self.tokens == other.tokens
 
     def __getitem__(self, item) -> str:
@@ -39,10 +43,10 @@ class GrammarRule:
         return len(self.tokens)
 
     def __repr__(self) -> str:
-        return repr(self.__str__())
+        return repr(str(self))
 
     def __str__(self) -> str:
-        return f"{self.name} -> {' '.join(self.tokens)}"
+        return f"{self.symbol} -> {' '.join(self.tokens)}"
 
 
 class Grammar:
@@ -50,18 +54,31 @@ class Grammar:
     def __init__(self, rules: List[GrammarRule]):
         self.rules = rules
 
-    def __str__(self):
-        return '\n'.join([str(rule) for rule in self.rules])
+    def add(self, rule: GrammarRule):
+        self.rules.append(rule)
 
-    def __repr__(self):
-        return repr(self.__str__())
+    def __getitem__(self, item) -> GrammarRule:
+        return self.rules[item]
+
+    def __contains__(self, item) -> bool:
+        return item in self.rules
+
+    def __str__(self):
+        return '\n'.join([str(x) for x in self.rules])
 
 
 class Parser:
 
-    def __init__(self, grammar: Grammar):
+    def __init__(self, grammar: Grammar, terminals: List[LexerRule]):
         self.grammar = grammar
+        self.terminals = terminals
 
     @abstractmethod
     def parse(self, tokens: List[Token]):
         pass
+
+    def is_terminal(self, symbol: str) -> bool:
+        for terminal in self.terminals:
+            if terminal.name == symbol:
+                return True
+        return False

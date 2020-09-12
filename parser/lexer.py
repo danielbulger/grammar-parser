@@ -10,7 +10,7 @@ class Token:
         self.value = value
 
     def __str__(self):
-        return f'{self.name}={self.value}'
+        return f'Token[Symbol={self.name}, Value={self.value}]'
 
     def __repr__(self):
         return repr(self.__str__())
@@ -60,6 +60,15 @@ class LexerRule:
 
     def __repr__(self):
         return self.__str__()
+
+    def __contains__(self, item):
+        return item == self.name
+
+    def __eq__(self, other):
+        return type(other) is LexerRule and \
+               self.name == other.symbol and \
+               self.pattern == other.pattern and \
+               self.skip == other.skip
 
 
 class Lexer:

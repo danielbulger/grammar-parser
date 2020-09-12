@@ -1,14 +1,4 @@
-NUMBER: -?\d+
-LPAREN = (
-RPAREN = )
-LBRACKET = [
-RBRACKET = ]
-SEMICOLON = :
-SINGLE_QUOTE = '
-QUOTE = "
-AND = AND
-OR = OR
-NOT = -
-WILDCARD = *
-WORD: (?!-)[^\s'":\[\]()]+
-WHITESPACE: ^\s+ -> skip
+SUM = +
+MULTIPLY = *
+NUMBER: \d+
+WHITESPACE: \s+ -> skip
